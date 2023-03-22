@@ -1,2 +1,2 @@
-# Recipes-Calories-Prediction-Model
+# Recipe-Calories-Prediction-Model
 Project for DSC80 
