@@ -54,7 +54,7 @@ sns.set(rc={"figure.figsize":(12, 10)})
 sns.heatmap(nutrition.corr(), vmin=-1, vmax=1, annot=True)
 ```
 
-<iframe src="data_viz/corr_map.jpg" width=900 height=600 frameBorder=0></iframe>
+<iframe src="data_viz/corr.jpg" width=800 height=600 frameBorder=0></iframe>
 
 Based on our analysis, we have identified the most highly correlated features with calories in our dataset, which are `total fat (PDV)`, `sugar (PDV)`, `protein (PDV)`, `saturated fat (PDV)`, and `carbohydrates`. However, we must be cautious of highly correlated features, as they may lead to redundancy and not significantly reduce model error. For instance, since total fat and saturated fat have a high r-correlation of 0.86, we will exclude saturated fat from our model as it has a smaller correlation with calories. Similarly, since sugar and carbohydrates are highly correlated with an r-correlation of 0.88, we will exclude sugar from our analysis. 
 
