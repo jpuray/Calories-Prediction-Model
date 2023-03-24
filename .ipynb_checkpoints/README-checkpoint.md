@@ -1,10 +1,10 @@
 
 
-# Counting Calories with Math!
+
 Project for DSC80 @ UCSD
 
-**Before you read, you should check out our exploratory data analysis of the dataset!
-<a href="https://jpuray.github.io/Recipe-Reviews-Analysis/">Exploratory data analysis Recipes dataset</a>
+**Before you read, you should check out our exploratory data analysis of the dataset!**
+<a href="https://jpuray.github.io/Recipe-Reviews-Analysis/">Exploratory data analysis of Recipes dataset</a>
 
 ## Framing the Problem
 
