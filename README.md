@@ -3,9 +3,38 @@ Project for DSC80 @ UCSD
 **Before you read, you should check out our exploratory data analysis of the dataset!
 <a href="https://jpuray.github.io/Recipe-Reviews-Analysis/">Exploratory data analysis Recipes dataset</a>
 
-## Framing The Problem
+## Framing the Problem
 
----
+***Our problem: Can we predict the calories of a certain recipe based on other information from our dataset?***
+
+In this context, we are creating a Regression model to predict our response variable, the caloric value of the recipe. We figured that the value of calories would be interesting to predict for our project because there's plenty of interesting features that could share relationships with 'calories'. For example, cuisine could be a good indication of calories because of certain countries'/regions' tendencies to use oily/greasier ingredients vs. others' tendencies to use more vegetables and lighter ingredients, but this is just one example (and not one that we necessarily used in our model!) 
+
+To evaluate our model's success, we chose the **Root Mean Squared Error (RMSE)**. 
+
+MSE is one of the conventional metrics for computing the quality of the Model's predictions, because of its ability to measure differences in actual vs. predicted values. However, it gives us a value that is hard to interpret – squared calories. To mitigate this, we use RMSE instead. This will give us the error in terms of our response variable's original value – calories. 
+
+As a reminder, RMSE measures the difference between the actual data and the predictions of the data. A characteristic of RMSE is that for larger differences in actual vs. predicted values, the effect on RMSE will be disproportionately large. That is, RMSE *is* sensitive to outliers, but the subset of the recipes data that we use for predictions has outliers removed.
+
+In terms of data we'd have at the time of prediction, we believe that all data from the subset of data we're using is available at the time of prediction. This includes:
+- Name
+- Minutes
+- ID
+- Tags
+- Nutrition, which contains:
+    - Calories
+    - Total Fat
+    - Sugar
+    - Sodium
+    - Protein
+    - Saturated Fat
+    - Carbohydrates
+- Number of Steps
+- Steps
+- Description
+- Ingredients
+- Number of Ingredients
+
+We also acknowledge that it may seem redundant to predict calories when the values are already there in the nutrition column. However, a real life scenario where our prediction model might be helpful would be if there was no calorie value input into a recipe or if food.com suddenly had all calorie values erased from its recipes. In that case, a high-quality model would be able to fill in those values for people who value the caloric value of a recipe (e.g. dietary, health, etc.)
 
 ## Baseline Model
 
@@ -130,3 +159,78 @@ r_lin_searcher.best_params_
 ```
 
 After testing various parameters, we found that an `alpha` of 9 and a `max_iter` of 5 produced the best results. However, when calculating the RMSE on the training and testing data, we discovered that the Ridge Regression model did not perform as well as our linear regression model. With a **training RMSE of 693.19** and **testing RMSE of 637.73** our new model performed significantly worse than our previous one. Although it was more complex, the linear regression model with added features still outperformed it. Nonetheless, our final model was a significant improvement over the baseline as the RMSE was almost halved. 
+
+## Fairness Analysis
+For our Fairness Analysis, we decided to measure the quality of predictions for more ingredients vs. less ingredients. We chose these two groups because a recipe with more ingredients might be a better feature for predicting calories because adding another ingredient to a recipe will inherently add more calories to the recipe, since an ingredient cannot have negative calories itself. However, a recipe with less ingredients might not give us as clear of a picture for prediction. A recipe could have 3 ingredients and still have a much higher caloric value than a recipe of 100 ingredients if the 3-ingredient recipe contains an *extremely* high-calorie ingredient. Thus, we wanted to assess if our model was able to account for these edge cases.
+
+More specifically, wewe decided to compare the following groups of recipes:
+
+>Number of Ingredients > 9
+
+>Number of Ingredients <= 9
+
+We chose 9 as our threshold because 9 ingredients is the mean value of ingredients in our dataset. Thus, ingredients greater than 9 will be classified as more ingredients and any recipe with less than 9 ingredients will classified as having less ingredients. 
+
+***Null and Alternative Hypotheses***
+
+ - Null Hypothesis:  Our model’s accuracy was the same for both recipes with <= 9 ingredients and >9 ingredients and any differences are due to random chance.
+ - Alternative Hypothesis: The classifier’s accuracy is higher for more ingredients (>9)
+
+
+
+For computation purposes, we added a column to our dataframe, 'more ingredients' that identifies whether the recipe has 'more' or 'less' ingredients. The first five rows of the dataframe with the inserted column appears as so:
+
+|    | name                                 |     id | more ingredients   |
+|---:|:-------------------------------------|-------:|:-------------------|
+|  0 | 1 brownies in the world    best ever | 333281 | less               |
+|  1 | 1 in canada chocolate chip cookies   | 453467 | more               |
+|  2 | 412 broccoli casserole               | 306168 | less               |
+|  3 | millionaire pound cake               | 286009 | less               |
+|  4 | 2000 meatloaf                        | 475785 | more               |
+
+### Evaluation Metric
+
+Our evaluation metric for the Fairness Analysis is the Difference in RMSE. Similarly to evaluating our prediction model, using difference of RMSE will give us an idea of the difference between the quality of our prediction model between the group of recipes with less ingredients vs. the recipes with more ingredients. To calculate the observed difference in RMSE, we use the following code:
+
+```py
+obs = (
+    results
+    .groupby('more ingredients')
+    .apply(lambda x: rmse(x['prediction'], x['calories_test']))
+    .rename('rmse')
+    .to_frame()
+).diff().iloc[-1].iloc[0]
+```
+
+***Performing the test***
+We are using a **5% significance level** for our test, since it is the conventional significance level.
+
+```py
+diff_in_acc = []
+for _ in range(100):
+    s = (
+        results[['more ingredients', 'prediction', 'calories_test']].reset_index()
+        .assign(more=results['more ingredients'].sample(frac=1.0, replace=False).reset_index(drop=True))
+        .groupby('more')
+        .apply(lambda x: rmse(x['prediction'], x['calories_test']))
+        .diff()
+        .iloc[-1]
+    )
+    
+    diff_in_acc.append(s)
+-6.149033363119015
+```
+
+Calculating the p-value:
+```py
+p_val = (np.array(diff_in_acc)<= obs).mean()
+0.0
+```
+Our p-value was 0.0, for which we reject the null hypothesis at the 5% significance level. 
+Visualizing the distribution of test statistics:
+
+<iframe src="data_viz/diff-rmse.html" width=800 height=600 frameBorder=0></iframe>
+
+### Conclusion
+
+We did find that there was a statistically significant difference in RMSE for the two groups. That is, our prediction tends to be more accurate for recipes with more ingredients. However, we cannot definitively conclude that our model is better for recipes with more ingredients.
