@@ -1,4 +1,7 @@
 Project for DSC80 @ UCSD
+
+<a href="https://jpuray.github.io/Recipe-Reviews-Analysis/">Our exploratory data analysis on this dataset can be found here!</a>
+
 ## Framing The Problem
 
 ---
@@ -100,13 +103,30 @@ lin = Pipeline([
 lin.fit(X_train, y_train)
 ```
 
-After fitting our linear regression model with the 2 new features we recieved a a RMSE of 209.33 calories squared and a RMSE of 336.62. Practically reducing the RMSE by double compared to our previous model. 
+After fitting our linear regression model with the 2 new features we recieved a a RMSE of 209.33 calories squared and a RMSE of 336.62. Reducing the RMSE by double compared to our previous model. 
 
-***INSERT RES PLOT***
+<iframe src="data_viz/final_model.png" width=800 height=600 frameBorder=0></iframe>
 
-As you can see the data points are much tighter and are more accurate predictions of the true calories of recipes. However, let's see if we can improve our model even more by trying different types of regression. 
+As you can see the data points are much tighter and are more accurate predictions of the true calories of recipes. However, let's see if we can improve our model even more by using another regression technique, Ridge Regression.
 
 ***Ridge Regression***
 
+Ridge regression which is a model tuning method that helps data reduce error by shrinking coefficients and reducing the effects of multicolinearity.
+To determine the best hyperparameters for ridge regression model we will use a function from SKLearn called `GridSearchCV`, a cross-validation technique which tests all possible combinations of the hyperparameters we listed below. We have 4 possible values for `alpha` and 4 possible values of `max_iter` which will test k=5 times. Which means we will be testing 80 different possible combinations and keeping the hyperparameteres that had the best average validation score. 
 
-***Decision Tree Regression***
+```py
+# Possible hyperparameter combination
+hyperparameters = {
+    'alpha': [1,2,6,9], 
+    'max_iter': [2,5,6,8],
+}
+
+# Determing the best HyperParameters out of the ones we chose
+r_lin_searcher = GridSearchCV(r_lin, param_grid=hyperparameters)
+r_lin_searcher.fit(X_train, y_train) # Fitting model
+r_lin_searcher.best_params_
+}
+```
+
+After testing various parameters, we found that an alpha of 9 and a max_iter of 5 produced the best results. However, when calculating the RMSE on the training and testing data, we discovered that the Ridge Regression model did not perform as well as our linear regression model. Although it was more complex, the linear regression model with added features still outperformed it. Nonetheless, our final model was a significant improvement over the baseline as the RMSE was almost halved. 
+
