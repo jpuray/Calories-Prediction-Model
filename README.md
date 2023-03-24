@@ -204,7 +204,7 @@ obs = (
     .to_frame()
 ).diff().iloc[-1].iloc[0]
 ```
-Giving us a p-value of: **-6.149033363119015** 
+Giving us an observed value of: **-5.545338283937426** 
 
 ***Performing the test***
 We are using a **5% significance level** for our test, since it is the conventional significance level.
