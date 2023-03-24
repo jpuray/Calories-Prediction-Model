@@ -1,3 +1,4 @@
+# Counting Calories with Math!
 Project for DSC80 @ UCSD
 
 **Before you read, you should check out our exploratory data analysis of the dataset!
@@ -201,6 +202,7 @@ obs = (
     .to_frame()
 ).diff().iloc[-1].iloc[0]
 ```
+Giving us a p-value of: **-6.149033363119015** 
 
 ***Performing the test***
 We are using a **5% significance level** for our test, since it is the conventional significance level.
@@ -218,7 +220,6 @@ for _ in range(100):
     )
     
     diff_in_acc.append(s)
--6.149033363119015
 ```
 
 Calculating the p-value:
