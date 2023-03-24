@@ -1,6 +1,4 @@
-# Counting Calories with MATH!
-Project for DSC80 
-
+Project for DSC80 @ UCSD
 ## Framing The Problem
 
 ---
@@ -56,10 +54,59 @@ ax.set(xlabel='True Calories',
        title='Baseline Model')
 ```
            
-<iframe src="data_viz/baseline_lin.jpg" width=800 height=600 frameBorder=0></iframe>
+<iframe src="data_viz/baseline.jpg" width=800 height=600 frameBorder=0></iframe>
 
 As you can see, many of our predictions are relatively close to the true calorie values. However, there is still room for improvement, and we aim to do so by incorporating other features from our dataset, such as the categorical variables.
 
 ---
 
 ## Final Model
+
+***Choosing Categorical Features*** 
+
+For our final model we will be assessing the categorical features of our dataset and see which one we can add in order to improve our model.
+
+```py
+categorical = recipes[['name','tags','description','ingredients']]
+categorical.head()
+
+```
+
+|    | name                                 | tags                                                                                                                                                                                                                                                                                               | description                                                                                                                                                                                                                                                                                                                                                                       | ingredients                                                                                                                                                                                                                             |
+|---:|:-------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  0 | 1 brownies in the world    best ever | ['60-minutes-or-less', 'time-to-make', 'course', 'main-ingredient', 'preparation', 'for-large-groups', 'desserts', 'lunch', 'snacks', 'cookies-and-brownies', 'chocolate', 'bar-cookies', 'brownies', 'number-of-servings']                                                                        | these are the most; chocolatey, moist, rich, dense, fudgy, delicious brownies that you'll ever make.....sereiously! there's no doubt that these will be your fav brownies ever for you can add things to them or make them plain.....either way they're pure heaven!                                                                                                              | ['bittersweet chocolate', 'unsalted butter', 'eggs', 'granulated sugar', 'unsweetened cocoa powder', 'vanilla extract', 'brewed espresso', 'kosher salt', 'all-purpose flour']                                                          |
+|  1 | 1 in canada chocolate chip cookies   | ['60-minutes-or-less', 'time-to-make', 'cuisine', 'preparation', 'north-american', 'for-large-groups', 'canadian', 'british-columbian', 'number-of-servings']                                                                                                                                      | this is the recipe that we use at my school cafeteria for chocolate chip cookies. they must be the best chocolate chip cookies i have ever had! if you don't have margarine or don't like it, then just use butter (softened) instead.                                                                                                                                            | ['white sugar', 'brown sugar', 'salt', 'margarine', 'eggs', 'vanilla', 'water', 'all-purpose flour', 'whole wheat flour', 'baking soda', 'chocolate chips']                                                                             |
+|  2 | 412 broccoli casserole               | ['60-minutes-or-less', 'time-to-make', 'course', 'main-ingredient', 'preparation', 'side-dishes', 'vegetables', 'easy', 'beginner-cook', 'broccoli']                                                                                                                                               | since there are already 411 recipes for broccoli casserole posted to "zaar" ,i decided to call this one  #412 broccoli casserole.i don't think there are any like this one in the database. i based this one on the famous "green bean casserole" from campbell's soup. but i think mine is better since i don't like cream of mushroom soup.submitted to "zaar" on may 28th,2008 | ['frozen broccoli cuts', 'cream of chicken soup', 'sharp cheddar cheese', 'garlic powder', 'ground black pepper', 'salt', 'milk', 'soy sauce', 'french-fried onions']                                                                   |
+|  3 | millionaire pound cake               | ['time-to-make', 'course', 'cuisine', 'preparation', 'occasion', 'north-american', 'desserts', 'american', 'southern-united-states', 'dinner-party', 'holiday-event', 'cakes', 'dietary', 'christmas', 'thanksgiving', 'low-sodium', 'low-in-something', 'taste-mood', 'sweet', '4-hours-or-less'] | why a millionaire pound cake?  because it's super rich!  this scrumptious cake is the pride of an elderly belle from jackson, mississippi.  the recipe comes from "the glory of southern cooking" by james villas.                                                                                                                                                                | ['butter', 'sugar', 'eggs', 'all-purpose flour', 'whole milk', 'pure vanilla extract', 'almond extract']                                                                                                                                |
+|  4 | 2000 meatloaf                        | ['time-to-make', 'course', 'main-ingredient', 'preparation', 'main-dish', 'potatoes', 'vegetables', '4-hours-or-less', 'meatloaf', 'simply-potatoes2']                                                                                                                                             | ready, set, cook! special edition contest entry: a mediterranean flavor inspired meatloaf dish. featuring: simply potatoes - shredded hash browns, egg, bacon, spinach, red bell pepper, and goat cheese.                                                                                                                                                                         | ['meatloaf mixture', 'unsmoked bacon', 'goat cheese', 'unsalted butter', 'eggs', 'baby spinach', 'yellow onion', 'red bell pepper', 'simply potatoes shredded hash browns', 'fresh garlic', 'kosher salt', 'white pepper', 'olive oil'] |
+
+Upon analyzing the categorical features, we have identified two variables, namely `tags` and `ingredients`, that have the potential to enhance our model's performance. The tags associated with each recipe could provide valuable insights into its calorie content, while the ingredients used in a recipe are known to significantly impact its overall calorie count. 
+
+***Implementation*** 
+
+Upon closer inspection, it becomes apparent that these features are presented in the form of a list of strings. Therefore, to integrate them into our model, we must first convert them into a more suitable format for our model. To achieve this, we will utilize the CountVectorizer tool from SKLearn. This will enable us to transform the tags and ingredients variables into tokens, which we will then fit in our model.
+
+```py
+vectorizer = CountVectorizer(analyzer=lambda x: x)
+final_transformer = ColumnTransformer([
+                        ('tag-vec', vectorizer, 'tags'),
+                        ('ingredient-vec', vectorizer, 'ingredients')],
+                        remainder = 'passthrough') # leave all other columns as it 
+
+lin = Pipeline([
+                ('vectorizer',final_transformer),
+                ('lin-reg', LinearRegression())])
+
+lin.fit(X_train, y_train)
+```
+
+After fitting our linear regression model with the 2 new features we recieved a a RMSE of 209.33 calories squared and a RMSE of 336.62. Practically reducing the RMSE by double compared to our previous model. 
+
+***INSERT RES PLOT***
+
+As you can see the data points are much tighter and are more accurate predictions of the true calories of recipes. However, let's see if we can improve our model even more by trying different types of regression. 
+
+***Ridge Regression***
+
+
+***Decision Tree Regression***
