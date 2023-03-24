@@ -1,6 +1,6 @@
 
 
-
+# Counting Calories with Math!
 Project for DSC80 @ UCSD
 
 **Before you read, you should check out our exploratory data analysis of the dataset!**
@@ -176,8 +176,8 @@ We chose 9 as our threshold because 9 ingredients is the mean value of ingredien
 
 ***Null and Alternative Hypotheses***
 
- - Null Hypothesis:  Our model’s accuracy was the same for both recipes with <= 9 ingredients and >9 ingredients and any differences are due to random chance.
- - Alternative Hypothesis: The classifier’s accuracy is higher for more ingredients (>9)
+ - **Null Hypothesis**:  Our model’s accuracy was the same for both recipes with <= 9 ingredients and >9 ingredients and any differences are due to random chance.
+ - **Alternative Hypothesis**: The classifier’s accuracy is higher for more ingredients (>9)
 
 
 
