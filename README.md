@@ -1,6 +1,7 @@
 Project for DSC80 @ UCSD
 
-<a href="https://jpuray.github.io/Recipe-Reviews-Analysis/">Our exploratory data analysis on this dataset can be found here!</a>
+**Before you read, you should check out our exploratory data analysis of the dataset!
+<a href="https://jpuray.github.io/Recipe-Reviews-Analysis/">Exploratory data analysis Recipes dataset</a>
 
 ## Framing The Problem
 
@@ -41,7 +42,7 @@ base_model = Pipeline([
 base_model.fit(X_train, y_train)
 ```
 
-After testing our model on the training data, we obtained a residual mean squared error (RMSE) of 693.43 calories squared. We then evaluated the model on the testing data, where we obtained an RMSE of 637.96 calories squared. This suggests that our model performed better on the testing data, which is encouraging, as it indicates that the model generalizes well to new, unseen data, and does not overfit to the training data.
+After testing our model on the training data, we obtained a residual mean squared error (RMSE) of **693.43 calories squared**. We then evaluated the model on the testing data, where we obtained an RMSE of **637.96 calories squared**. This suggests that our model performed better on the testing data, which is encouraging, as it indicates that the model generalizes well to new, unseen data, and does not overfit to the training data.
 
 To better illustrate the performance of our model we can visualize it by creating a residual plot with the **true calories** on the x-axis and our **predicted calories** on the y-axis. 
 
@@ -103,7 +104,7 @@ lin = Pipeline([
 lin.fit(X_train, y_train)
 ```
 
-After fitting our linear regression model with the 2 new features we recieved a a RMSE of 209.33 calories squared and a RMSE of 336.62. Reducing the RMSE by double compared to our previous model. 
+After fitting our linear regression model with the 2 new features we recieved a a RMSE of **209.33 calories squared** on the training data and a RMSE of ***336.62 calories squared***. Reducing the RMSE by double compared to our previous model. 
 
 <iframe src="data_viz/final_model.png" width=800 height=600 frameBorder=0></iframe>
 
@@ -128,5 +129,4 @@ r_lin_searcher.best_params_
 }
 ```
 
-After testing various parameters, we found that an alpha of 9 and a max_iter of 5 produced the best results. However, when calculating the RMSE on the training and testing data, we discovered that the Ridge Regression model did not perform as well as our linear regression model. Although it was more complex, the linear regression model with added features still outperformed it. Nonetheless, our final model was a significant improvement over the baseline as the RMSE was almost halved. 
-
+After testing various parameters, we found that an `alpha` of 9 and a `max_iter` of 5 produced the best results. However, when calculating the RMSE on the training and testing data, we discovered that the Ridge Regression model did not perform as well as our linear regression model. With a **training RMSE of 693.19** and **testing RMSE of 637.73** our new model performed significantly worse than our previous one. Although it was more complex, the linear regression model with added features still outperformed it. Nonetheless, our final model was a significant improvement over the baseline as the RMSE was almost halved. 
